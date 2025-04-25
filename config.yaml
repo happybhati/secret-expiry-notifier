@@ -1,0 +1,5 @@
+---
+sheet_id: "14u9LTpygkei8aR7dzDwhbUps1gHjgyHjtKaM8zuqAy8"
+alert_days: 30
+default_slack_webhook: "USE_GITHUB_SECRET"
+default_slack_channel: "#konflux-secret-alerts"
