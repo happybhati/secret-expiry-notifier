@@ -60,20 +60,35 @@ for row in records:
         days_remaining = (expiry_date - today).days
 
         if today <= expiry_date <= alert_window:
-            message = f"""
-:rotating_light: *Secret Expiry Alert* :rotating_light:
-
-*Secret:* `{secret_name}`
-*Environment:* `{environment}`
-*Expires on:* {expiry_date} (in *{days_remaining}* days)
-
-*Rotation Steps:* {rotation_instructions}
-*Responsible:* {slack_tag}
-"""
-            response = slack.send(text=message)
+            # Send formatted Slack alert using Block Kit
+            slack.send(
+                blocks=[
+                    {
+                        "type": "header",
+                        "text": {"type": "plain_text", "text": "🚨 Secret Expiry Alert"}
+                    },
+                    {"type": "divider"},
+                    {
+                        "type": "section",
+                        "fields": [
+                            {"type": "mrkdwn", "text": f"*Secret:*\n`{secret_name}`"},
+                            {"type": "mrkdwn", "text": f"*Environment:*\n`{environment}`"},
+                            {"type": "mrkdwn", "text": f"*Expires on:*\n*{expiry_date}* (_in {days_remaining} days_)"},
+                        ]
+                    },
+                    {
+                        "type": "section",
+                        "fields": [
+                            {"type": "mrkdwn", "text": f"*🔁 Rotation:*\n{rotation_instructions}"},
+                            {"type": "mrkdwn", "text": f"*👤 Responsible:*\n{slack_tag}"}
+                        ]
+                    },
+                    {"type": "divider"}
+                ]
+            )
             alerts_sent += 1
 
     except Exception as e:
-        print(f"Error processing row: {row} → {e}")
+        print(f"⚠️ Error processing row: {row} → {e}")
 
 print(f"✅ Alerting complete. {alerts_sent} secrets flagged for expiry.")
